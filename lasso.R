@@ -1,23 +1,56 @@
 library("boot")
 library("glmnet")
+library("caret")
+library("matrixStats")
+
 setwd("~/Documents/Git/Job-Match-Prediction")
 job_data = read.csv("dtm_jobs.csv", header =TRUE)
 
-X= job_data[,10:9577]
-X <- data.frame(apply(X, 2, as.factor))
-
-Y = as.vector(job_data$Category)
-#Y2 = lapply(Y1, as.factor)
-
-#data = cbind(X2, Y)
-
-#X = model.matrix(Y ~ ., data = data)[,-1]
-
 set.seed(1)
-grid = 10^seq(10,-2,length = 100)
-lasso.mod = glmnet(X,Y,alpha = 1, lambda = .1, family = "multinomial")
 
-#cv.out=cv.glmnet(X_train,Ytrain1,alpha=1,lambda=grid) #10 fold cross validation bestlam=cv.out$lambda.min
-#bestlam
-#lasso.mod=glmnet(X_train,Ytrain1,alpha=1,lambda=bestlam)
-#coef(lasso.mod)[,1]
+#Randomly shuffle the data
+shuffledData<-job_data[sample(nrow(job_data)),]
+
+#Create 10 equally size folds
+folds <- cut(seq(1,nrow(shuffledData)),breaks=5,labels=FALSE)
+
+A = shuffledData[,11:1814]
+X= as.matrix(A)
+Y = as.vector(shuffledData$Cat1)
+
+grid = 10^seq(10,-2,length = 100)
+
+cv.error = rep(0,5)
+
+#Perform 5 fold cross validation
+for(i in 1:5){
+  #Segement your data by fold using the which() function 
+  testIndexes <- which(folds==i,arr.ind=TRUE)
+  Xtest <- X[testIndexes, ]
+  Ytest <- Y[testIndexes]
+  Xtrain <- X[-testIndexes, ]
+  Ytrain <- Y[-testIndexes]
+  
+  #lasso.mod = glmnet(X,Y,alpha = 1, lambda =grid, family = "multinomial")
+  cv.out=cv.glmnet(Xtrain,Ytrain,alpha=1,lambda=grid, family = "multinomial")
+  bestlam=cv.out$lambda.min
+  
+  lasso.mod=glmnet(Xtrain,Ytrain,alpha=1,lambda=bestlam, family = "multinomial")
+  #coef(lasso.mod)
+  pred.lasso = inv.logit(predict.cv.glmnet(cv.out,s = bestlam, newx = Xtest, type = "link"))
+  pred = c(0,nrow(pred.lasso))
+  for(j in 1:nrow(pred.lasso)){
+    m= max(pred.lasso[j,,])
+    if(pred.lasso[j,1,] == m){pred[j]="Admin"}
+    else if(pred.lasso[j,2,] == m){pred[j]="Business"}
+    else if(pred.lasso[j,3,] == m){pred[j]="Sales"}
+    else{pred[j]="Tech"}
+  }
+  table= table(pred,Ytest)
+  print(table)
+  error = 1 - (sum(diag(table))/length(Ytest))
+  cv.error[i] = error
+}
+
+cv.error
+mean(cv.error)
