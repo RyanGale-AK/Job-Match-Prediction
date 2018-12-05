@@ -53,4 +53,4 @@ for(i in 1:5){
 }
 
 cv.error
-mean(cv.error)
+mean_error = mean(cv.error)
