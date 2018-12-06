@@ -1,5 +1,6 @@
 ###Tree method code 
 library(tree)
+library(randomForest)
 
 setwd("~/Documents/Git/Job-Match-Prediction")
 job_data = read.csv("dtm_jobs.csv", header =TRUE)
@@ -27,15 +28,24 @@ data = data.frame(Y,X)
 # cv.tree.job = cv.tree(tree.job)
 # prune.job = prune.tree(tree.job,best=5)
 
-train = sample(nrow(data), (nrow(data))*.75)
-job.test = Y[-train]
+#train = sample(nrow(data), (nrow(data))*.75)
 
-library(randomForest)
-bag.job = randomForest(x=X, y=Y, subset = train, importance = TRUE, ntree=50)
-bag.job
-yhat.bag = predict(bag.job, newdata = data[-train,])
-table= table(yhat.bag,job.test)
-print(table)
-error = 1 - (sum(diag(table))/length(job.test))
-#cv.error[i] = error
+cv.error = rep(0,5)
+folds <- cut(seq(1,nrow(job_data)),breaks=5,labels=FALSE)
 
+for(i in 1:5){
+  #Segement your data by fold using the which() function 
+  testIndexes <- which(folds==i,arr.ind=TRUE)
+  train = -testIndexes
+  job.test = Y[-train]
+  bag.job = randomForest(x=X, y=Y, subset = train, importance = TRUE, ntree=50)
+  bag.job
+  yhat.bag = predict(bag.job, newdata = data[-train,])
+  table= table(yhat.bag,job.test)
+  print(table)
+  error = 1 - (sum(diag(table))/length(job.test))
+  cv.error[i] = error
+}
+
+
+mean(cv.error)
