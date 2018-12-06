@@ -15,11 +15,8 @@ X= as.matrix(A)
 Y = as.vector(shuffledData$Cat1)
 
 library(tree)
-<<<<<<< HEAD
 library(randomForest)
-=======
 data = data.frame(Y,X)
->>>>>>> ca2cebdfb9d497d91b990f1fde063313c3a4d42d
 
 setwd("~/Documents/Git/Job-Match-Prediction")
 job_data = read.csv("dtm_jobs.csv", header =TRUE)
@@ -57,10 +54,10 @@ for(i in 1:5){
   testIndexes <- which(folds==i,arr.ind=TRUE)
   train <- which(folds!=i,arr.ind=TRUE)
   job.test = Y[testIndexes]
-  bag.job = randomForest(x=X, y=Y, subset = train, importance = TRUE, ntree=50)
-  bag.job
-  yhat.bag = predict(bag.job, newdata = X[testIndexes,])
-  table= table(yhat.bag,job.test)
+  rf.job = randomForest(x=X, y=Y, subset = train, importance = TRUE, ntree=50)
+  rf.job
+  yhat.rf = predict(rf.job, newdata = X[testIndexes,])
+  table= table(yhat.rf,job.test)
   print(table)
   error = 1 - (sum(diag(table))/length(job.test))
   cv.error[i] = error
