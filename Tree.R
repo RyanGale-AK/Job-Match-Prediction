@@ -1,6 +1,25 @@
 ###Tree method code 
+setwd("~/Documents/Git/Job-Match-Prediction")
+job_data = read.csv("dtm_jobs.csv", header =TRUE)
+
+set.seed(1)
+
+#Randomly shuffle the data
+shuffledData<-job_data[sample(nrow(job_data)),]
+
+#Create 10 equally size folds
+folds <- cut(seq(1,nrow(shuffledData)),breaks=5,labels=FALSE)
+
+A = shuffledData[,11:1814]
+X= as.matrix(A)
+Y = as.vector(shuffledData$Cat1)
+
 library(tree)
+<<<<<<< HEAD
 library(randomForest)
+=======
+data = data.frame(Y,X)
+>>>>>>> ca2cebdfb9d497d91b990f1fde063313c3a4d42d
 
 setwd("~/Documents/Git/Job-Match-Prediction")
 job_data = read.csv("dtm_jobs.csv", header =TRUE)
