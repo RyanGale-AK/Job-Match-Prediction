@@ -8,15 +8,15 @@ job_data = read.csv("dtm_jobs.csv", header =TRUE)
 set.seed(1)
 
 #Randomly shuffle the data
-#shuffledData<-job_data[sample(nrow(job_data)),]
+shuffledData<-job_data[sample(nrow(job_data)),]
 
 #Create 10 equally size folds
 #folds <- cut(seq(1,nrow(shuffledData)),breaks=5,labels=FALSE)
 
-#X = shuffledData[,11:1814]
-X = job_data[,11:1814]
+X = shuffledData[,11:1814]
+#X = job_data[,11:1814]
 
-Y = as.vector(job_data$Category)
+Y = as.vector(shuffledData$Category)
 Y = as.factor(Y)
 
 data = data.frame(Y,X)
@@ -31,16 +31,16 @@ data = data.frame(Y,X)
 #train = sample(nrow(data), (nrow(data))*.75)
 
 cv.error = rep(0,5)
-folds <- cut(seq(1,nrow(job_data)),breaks=5,labels=FALSE)
+folds <- cut(seq(1,nrow(shuffledData)),breaks=5,labels=FALSE)
 
 for(i in 1:5){
   #Segement your data by fold using the which() function 
   testIndexes <- which(folds==i,arr.ind=TRUE)
-  train = -testIndexes
-  job.test = Y[-train]
+  train <- which(folds!=i,arr.ind=TRUE)
+  job.test = Y[testIndexes]
   bag.job = randomForest(x=X, y=Y, subset = train, importance = TRUE, ntree=50)
   bag.job
-  yhat.bag = predict(bag.job, newdata = data[-train,])
+  yhat.bag = predict(bag.job, newdata = X[testIndexes,])
   table= table(yhat.bag,job.test)
   print(table)
   error = 1 - (sum(diag(table))/length(job.test))
@@ -49,3 +49,4 @@ for(i in 1:5){
 
 
 mean(cv.error)
+varUsed(bag.job,count=TRUE)
