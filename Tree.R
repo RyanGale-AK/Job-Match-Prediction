@@ -2,7 +2,7 @@ library(tree)
 library(randomForest)
 
 setwd("~/Documents/Git/Job-Match-Prediction")
-#job_data = read.csv("dtm_jobs.csv", header =TRUE)
+
 job_data_v2 = read.csv("dtm_jobs_v2.csv", header =TRUE)
 set.seed(1)
 
