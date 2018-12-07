@@ -4,17 +4,17 @@ library("caret")
 library("matrixStats")
 
 setwd("~/Documents/Git/Job-Match-Prediction")
-job_data = read.csv("dtm_jobs.csv", header =TRUE)
+job_data_v2 = read.csv("dtm_jobs_v2.csv", header =TRUE)
 
 set.seed(1)
 
 #Randomly shuffle the data
-shuffledData<-job_data[sample(nrow(job_data)),]
+shuffledData<-job_data_v2[sample(nrow(job_data)),]
 
 #Create 10 equally size folds
 folds <- cut(seq(1,nrow(shuffledData)),breaks=5,labels=FALSE)
 
-A = shuffledData[,11:1814]
+A = shuffledData[,12:1827]
 X= as.matrix(A)
 Y = as.vector(shuffledData$Cat1)
 
