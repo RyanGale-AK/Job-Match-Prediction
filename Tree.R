@@ -1,4 +1,3 @@
-###Tree method code 
 library(tree)
 library(randomForest)
 
