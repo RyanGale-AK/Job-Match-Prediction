@@ -56,5 +56,4 @@ for(i in 1:5){
 cv.error
 mean_error = mean(cv.error)
 lasso.coef = coef(lasso.mod,s=bestlam)
-admin = lasso.coef$Admin
-admin[which(admin!=0)]
+
