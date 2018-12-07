@@ -3,13 +3,14 @@ library("glmnet")
 library("caret")
 library("matrixStats")
 
+
 setwd("~/Documents/Git/Job-Match-Prediction")
 job_data_v2 = read.csv("dtm_jobs_v2.csv", header =TRUE)
 
 set.seed(1)
 
 #Randomly shuffle the data
-shuffledData<-job_data_v2[sample(nrow(job_data)),]
+shuffledData<-job_data_v2[sample(nrow(job_data_v2)),]
 
 #Create 10 equally size folds
 folds <- cut(seq(1,nrow(shuffledData)),breaks=5,labels=FALSE)
@@ -54,3 +55,6 @@ for(i in 1:5){
 
 cv.error
 mean_error = mean(cv.error)
+lasso.coef = coef(lasso.mod,s=bestlam)
+admin = lasso.coef$Admin
+admin[which(admin!=0)]

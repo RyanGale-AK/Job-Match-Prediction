@@ -8,13 +8,13 @@ job_data_v2 = read.csv("dtm_jobs_v2.csv", header =TRUE)
 set.seed(1)
 
 #Randomly shuffle the data
-shuffledData<-job_data_v2[sample(nrow(job_data)),]
+shuffledData<-job_data_v2[sample(nrow(job_data_v2)),]
 
 #Create 10 equally size folds
 
 X = shuffledData[,12:1827]
 
-Y = as.vector(shuffledData$Cat1)
+Y = as.vector(shuffledData$Cat2)
 Y = as.factor(Y)
 
 data = data.frame(Y,X)
@@ -39,3 +39,4 @@ for(i in 1:5){
 
 mean(cv.error)
 varUsed(rf.job,count=TRUE)
+import = importance(rf.job, type =1)
